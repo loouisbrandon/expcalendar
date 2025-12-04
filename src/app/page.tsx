@@ -20,8 +20,8 @@ type ExperienceResult = {
 
 export default function Home() {
   const [experiences, setExperiences] = useState<Experience[]>([])
-  const [multiplier, setMultiplier] = useState<string>('')
   const [hasDegree, setHasDegree] = useState<boolean>(false)
+  const multiplier = 4.5 // Valor fixo
 
   const addExperience = () => {
     const newId = experiences.length > 0 
@@ -126,8 +126,7 @@ export default function Home() {
     const diffDays = Math.round((endDateObj.getTime() - startDateObj.getTime()) / msPerDay)
     const periods = Math.floor(diffDays / 180)
     const remaining = diffDays % 180
-    const multiplierValue = parseFloat(multiplier) || 0
-    const points = periods * multiplierValue
+    const points = periods * multiplier
 
     return {
       id: exp.id,
@@ -141,7 +140,7 @@ export default function Home() {
 
   const results = useMemo(() => {
     return experiences.map(exp => calculateExperience(exp))
-  }, [experiences, multiplier])
+  }, [experiences])
 
   const validResults = results.filter(r => !r.hasError && r.days > 0)
 
@@ -177,30 +176,20 @@ export default function Home() {
         <div className="bg-gray-800 rounded-lg shadow-lg p-4 sm:p-5 md:p-6">
           {/* Header da calculadora */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
-            <span className="inline-block bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium">
-              Período base: 180 dias
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-block bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium">
+                Período base: 180 dias
+              </span>
+              <span className="inline-block bg-purple-600 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium">
+                Multiplicador: 4,5 pontos
+              </span>
+            </div>
             <button
               onClick={addExperience}
               className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 sm:py-2 rounded-lg text-sm sm:text-base font-medium transition-colors"
             >
               Adicionar experiência
             </button>
-          </div>
-
-          {/* Campo do multiplicador */}
-          <div className="mb-4 sm:mb-6">
-            <label htmlFor="multiplier" className="block text-xs sm:text-sm font-medium mb-2">
-              Multiplicador de pontos por período (pontos a cada 180 dias)
-            </label>
-            <input
-              id="multiplier"
-              type="number"
-              step="0.1"
-              value={multiplier}
-              onChange={(e) => setMultiplier(e.target.value)}
-              className="w-full sm:max-w-xs bg-gray-700 border border-gray-600 rounded-lg px-4 py-2.5 sm:py-2 text-white text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
           </div>
 
           {/* Tabela de experiências */}
