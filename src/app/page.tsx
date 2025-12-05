@@ -21,7 +21,7 @@ type ExperienceResult = {
 export default function Home() {
   const [experiences, setExperiences] = useState<Experience[]>([])
   const [hasDegree, setHasDegree] = useState<boolean>(false)
-  const multiplier = 4.5 // Valor fixo
+  const [multiplier, setMultiplier] = useState<number>(4.5)
 
   const addExperience = () => {
     const newId = experiences.length > 0 
@@ -140,7 +140,7 @@ export default function Home() {
 
   const results = useMemo(() => {
     return experiences.map(exp => calculateExperience(exp))
-  }, [experiences])
+  }, [experiences, multiplier])
 
   const validResults = results.filter(r => !r.hasError && r.days > 0)
 
@@ -181,7 +181,7 @@ export default function Home() {
                 Período base: 180 dias
               </span>
               <span className="inline-block bg-purple-600 text-white px-3 py-1.5 rounded-full text-xs sm:text-sm font-medium">
-                Multiplicador: 4,5 pontos
+                Multiplicador: {multiplier % 1 === 0 ? multiplier : multiplier.toFixed(1).replace('.', ',')} pontos
               </span>
             </div>
             <button
@@ -190,6 +190,24 @@ export default function Home() {
             >
               Adicionar experiência
             </button>
+          </div>
+
+          {/* Campo do multiplicador */}
+          <div className="mb-4 sm:mb-6">
+            <label htmlFor="multiplier" className="block text-xs sm:text-sm font-medium mb-2">
+              Multiplicador de pontos por período (pontos a cada 180 dias)
+            </label>
+            <select
+              id="multiplier"
+              value={multiplier}
+              onChange={(e) => setMultiplier(parseFloat(e.target.value))}
+              className="w-full sm:max-w-xs bg-gray-700 border border-gray-600 rounded-lg px-4 py-2.5 sm:py-2 text-white text-base focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value={4.5}>4,5 pontos</option>
+              <option value={3}>3 pontos</option>
+              <option value={2}>2 pontos</option>
+              <option value={1}>1 ponto</option>
+            </select>
           </div>
 
           {/* Tabela de experiências */}
